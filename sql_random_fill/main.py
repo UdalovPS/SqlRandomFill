@@ -5,7 +5,7 @@ class SQLiteDB:
     """This class need for work in SQLite DB"""
     def __init__(self, db_name="db.sqlite3"):
         """:arg
-        db_name - Database name
+            db_name - Database name
         """
         self.db_name = db_name
 
@@ -16,12 +16,12 @@ class SQLiteDB:
 
 class SqlRandomFill:
     """This contains all method requests to database"""
-    def __init__(self, db_class=SQLiteDB, verbose=False):
+    def __init__(self, db_class_obj, verbose=False):
         """:arg
-        db_class - Class of db with you work (default - SQLite)
-        verbose - flag for print logging information
+            db_class - Class of db with you work (default - SQLite)
+            verbose - flag for print logging information
         """
-        self.db = db_class()
+        self.db = db_class_obj
         self.verbose = verbose
 
     def create_cursor(self, connect: sqlite3.Connection):
@@ -30,7 +30,9 @@ class SqlRandomFill:
 
     def execute_request(self, request: str) -> None:
         """This method execute request to DB
-        :arg request - string request in SQL language"""
+        :arg
+            request - string request in SQL language
+        """
         try:
             with self.db.connect_db() as connect:           # connect to DB
                 if self.verbose:
@@ -46,11 +48,13 @@ class SqlRandomFill:
         finally:
             if connect:
                 connect.close()                             # close DB
-                print(f"[INFO] close db -> {self.db.db_name}")
+                if self.verbose:
+                    print(f"[INFO] close db -> {self.db.db_name}")
 
 
 if __name__ == '__main__':
     request = "SELECT sqlite_version();"
-    db = SqlRandomFill(SQLiteDB, verbose=True)
+    db_class_obj = SQLiteDB()
+    db = SqlRandomFill(db_class_obj, verbose=True)
     db.execute_request(request)
 
